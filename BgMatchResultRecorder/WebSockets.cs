@@ -30,7 +30,10 @@ namespace BgMatchResultRecorder
             if (ws == null) return;
             Logger.Info("");
 
-            ws.Close();
+            ws.CloseAsync(CloseStatusCode.Normal);
+
+            // Probable ws instance could be garbage collected before CloseAsync'
+            // recieve response, but we dont care 
             ws = null;
         }
 
