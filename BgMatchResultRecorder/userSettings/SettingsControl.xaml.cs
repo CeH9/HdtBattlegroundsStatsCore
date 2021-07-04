@@ -15,5 +15,10 @@ namespace BgMatchResultRecorder
             InputHostAddress.Text= cfg.websocketsServerAddress;
             InputHostAddress.CaretIndex = InputHostAddress.Text.Length;
         }
+
+        private void DebugButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            CoreEventsHandler.OnDebugButtonClicked();
+        }
     }
 }

@@ -4,6 +4,8 @@ using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
 using Hearthstone_Deck_Tracker.Hearthstone.Entities;
 using Core = Hearthstone_Deck_Tracker.API.Core;
+using BgUtils = Hearthstone_Deck_Tracker.Hearthstone.BattlegroundsUtils;
+using System;
 
 namespace BgMatchResultRecorder
 {
@@ -15,7 +17,20 @@ namespace BgMatchResultRecorder
 
             if (Hearthstone_Deck_Tracker.Core.Game.IsBattlegroundsMatch)
             {
+                try
+                {
+                    var gameId = Core.Game.CurrentGameStats.GameId;
+                    var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
 
+                    Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
+
+                    Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
+                    Logger.Info($"Region: {Core.Game.CurrentRegion}");
+                }
+                catch (Exception e)
+                {
+                    Logger.Info($"Catch: {e.Message}");
+                }
             }
         }
 
@@ -32,6 +47,16 @@ namespace BgMatchResultRecorder
         internal static void OnInMenu()
         {
             Logger.Info("OnInMenu");
+
+            try
+            {
+                Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
+                Logger.Info($"Region: {Core.Game.CurrentRegion}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"Catch: {e.Message}");
+            }
         }
 
         internal static void OnModeChanged(Mode mode)
@@ -59,10 +84,47 @@ namespace BgMatchResultRecorder
             {
                 Logger.Info($"TurnStart: {turn} Combat Phase");
                 PrintPlayerBoard();
+
+                var gameId = Core.Game.CurrentGameStats.GameId;
+                var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
+                Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
             }
             else
             {
                 Logger.Info($"TurnStart: {turn} Shopping Phase");
+            }
+        }
+
+        public static void OnDebugButtonClicked()
+        {
+            Logger.Info("==== OnDebugButtonClicked ====");
+            try
+            {
+                var gameId = Core.Game.CurrentGameStats.GameId;
+                var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
+
+                Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"AvailableRaces Catch: {e.Message}");
+            }
+
+            try
+            {
+                Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"Rank Catch: {e.Message}");
+            }
+            try
+            {
+                Logger.Info($"Region: {Core.Game.CurrentRegion}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"Region Catch: {e.Message}");
             }
         }
 

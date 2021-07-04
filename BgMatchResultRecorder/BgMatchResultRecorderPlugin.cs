@@ -80,7 +80,7 @@ namespace BgMatchResultRecorder
             //var card = Database.GetCardFromId("TB_BaconUps_093");
             //Logger.Info($"Card Id: {card.Id} Name: {card.Name}");
 
-            //WebSockets.ws.SendAsync("Hello Dude!", ((completed) => { }));
+            //WebSockets.ws.SendAsync("Hello Dude!", (completed) => { });
 
             settingsFlyout.IsOpen = true;
         }

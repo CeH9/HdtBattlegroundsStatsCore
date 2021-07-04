@@ -12,5 +12,9 @@
             <Label Content="Websockets Host Address:" FontSize="16"></Label>
             <TextBox Name="InputHostAddress" Text="localhost:12345" FontSize="16"  VerticalAlignment="Center"  Width="500" TextWrapping="Wrap" HorizontalAlignment="Right"></TextBox>
         </DockPanel>
+
+        <DockPanel Margin="10">
+            <Button x:Name="DebugButton" Content="Debug Button" Click="DebugButton_Click"  />
+        </DockPanel>
     </StackPanel>
 </UserControl>

@@ -35,6 +35,7 @@
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="HearthDb, Version=20.4.2.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="HearthMirror, Version=20.4.2.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="HearthstoneDeckTracker">
       <HintPath>C:\Users\CeH9\AppData\Local\HearthstoneDeckTracker\app-1.14.24\HearthstoneDeckTracker.exe</HintPath>
     </Reference>

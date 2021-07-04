@@ -21,6 +21,7 @@ namespace BgMatchResultRecorder
             ws.OnOpen += (sender, e) =>
             {
                 Logger.Info("WebSockets OnOpen");
+                ws.SendAsync("Hello from BgStats plugin!", (completed) => { });
             };
             ws.OnMessage += (sender, e) =>
             {
