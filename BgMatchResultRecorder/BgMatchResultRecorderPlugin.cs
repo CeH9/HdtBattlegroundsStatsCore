@@ -13,6 +13,8 @@ namespace BgMatchResultRecorder
         {
             Logger.Info("BgMatchResultRecorderPlugin OnLoad");
 
+            Settings.IsPluginEnabled = true;
+
             // TODO Init websockets
             Thread.CurrentThread.Name = "MainThread";
             MultiThreadingUtil.dispatcherMain = Dispatcher.CurrentDispatcher;
@@ -32,10 +34,10 @@ namespace BgMatchResultRecorder
 
         public void OnUnload()
         {
-            // Triggered when the user unticks the plugin, however, HDT does not completely unload the plugin.
-            // see https://git.io/vxEcH
-
+            // Triggered when the user unticks the plugin
             Logger.Info("BgMatchResultRecorderPlugin OnUnload");
+
+            Settings.IsPluginEnabled = true;
 
             WebSockets.Close();
         }
