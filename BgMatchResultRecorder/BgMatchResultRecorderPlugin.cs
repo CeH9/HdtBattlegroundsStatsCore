@@ -16,7 +16,7 @@ namespace BgMatchResultRecorder
 
         public void OnLoad()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnLoad");
+            Logger.Info("Plugin OnLoad");
 
             // Init Settings
             Settings.IsPluginEnabled = true;
@@ -46,7 +46,7 @@ namespace BgMatchResultRecorder
             };
             Core.MainWindow.Flyouts.Items.Add(settingsFlyout);
 
-            // Register Event Callbacks
+            // Register GameEvents' Callbacks
             GameEvents.OnInMenu.Add(CoreEventsHandler.OnInMenu);
             GameEvents.OnModeChanged.Add(CoreEventsHandler.OnModeChanged);
 
@@ -62,7 +62,7 @@ namespace BgMatchResultRecorder
         public void OnUnload()
         {
             // Triggered when the user unticks the plugin
-            Logger.Info("BgMatchResultRecorderPlugin OnUnload");
+            Logger.Info("Plugin OnUnload");
 
             WebSockets.Close();
 
@@ -72,7 +72,7 @@ namespace BgMatchResultRecorder
 
         public void OnButtonPress()
         {
-            Logger.Info("OnButtonPress");
+            Logger.Info("Plugin OnButtonPress");
 
             //Entity[] list = Helper.DeepClone<Dictionary<int, Entity>>(Hearthstone_Deck_Tracker.API.Core.Game.Entities).Values.ToArray<Entity>();
 
@@ -98,7 +98,7 @@ namespace BgMatchResultRecorder
 
         public string Author => "github.com/CeH9";
 
-        public Version Version => new Version(0, 0, 1);
+        public Version Version => new Version(1, 0, 0);
 
         public MenuItem MenuItem => null;
     }

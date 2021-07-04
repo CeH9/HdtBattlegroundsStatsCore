@@ -15,7 +15,7 @@ namespace BgMatchResultRecorder
         {
             if (!IsLogsEnabled) return;
 
-            Log.Info(msg);
+            Log.Info(msg, "log", "BgStatsCorePlugin");
         }
     }
 }

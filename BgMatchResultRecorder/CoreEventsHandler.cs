@@ -11,7 +11,7 @@ namespace BgMatchResultRecorder
     {
         internal static void GameStart()
         {
-            Logger.Info("BgMatchResultRecorderPlugin GameStart");
+            Logger.Info("CoreEvents GameStart");
 
             if (Hearthstone_Deck_Tracker.Core.Game.IsBattlegroundsMatch)
             {
@@ -21,7 +21,7 @@ namespace BgMatchResultRecorder
 
         internal static void OnGameEnd()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnGameEnd");
+            Logger.Info("OnGameEnd");
 
             if (Hearthstone_Deck_Tracker.Core.Game.IsBattlegroundsMatch)
             {
@@ -31,24 +31,24 @@ namespace BgMatchResultRecorder
 
         internal static void OnInMenu()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnInMenu");
+            Logger.Info("OnInMenu");
         }
 
         internal static void OnModeChanged(Mode mode)
         {
-            Logger.Info($"BgMatchResultRecorderPlugin OnModeChanged: {mode}");
+            Logger.Info($"OnModeChanged: {mode}");
         }
         internal static void OnGameWon()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnGameWon");
+            Logger.Info("OnGameWon");
         }
         internal static void OnGameLost()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnGameLost");
+            Logger.Info("OnGameLost");
         }
         internal static void OnGameTied()
         {
-            Logger.Info("BgMatchResultRecorderPlugin OnGameTied");
+            Logger.Info("OnGameTied");
         }
 
         internal static void TurnStart(ActivePlayer player)
@@ -57,18 +57,18 @@ namespace BgMatchResultRecorder
 
             if (BattlegroundsUtils.IsCombatPhase(player))
             {
-                Logger.Info($"BgMatchResultRecorderPlugin TurnStart: {turn} Combat Phase");
+                Logger.Info($"TurnStart: {turn} Combat Phase");
                 PrintPlayerBoard();
             }
             else
             {
-                Logger.Info($"BgMatchResultRecorderPlugin TurnStart: {turn} Shopping Phase");
+                Logger.Info($"TurnStart: {turn} Shopping Phase");
             }
         }
 
         public static void PrintPlayerBoard()
         {
-            Logger.Info("BgMatchResultRecorderPlugin PrintPlayerBoard");
+            Logger.Info("PrintPlayerBoard");
 
             var board = Core.Game.Player.Board;
             IOrderedEnumerable<Entity> entities = board.Where(x => x.IsMinion)

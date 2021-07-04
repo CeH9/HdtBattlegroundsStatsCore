@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using WebSocketSharp;
 
 namespace BgMatchResultRecorder
@@ -6,21 +7,45 @@ namespace BgMatchResultRecorder
     public class WebSockets
     {
         public static WebSocket ws;
+        private static bool isEnabled = false;
+        private static CancellationTokenSource reconnectionTaskToken = null;
 
         public static void Open()
         {
             var host = Settings.config.websocketsServerAddress;
-            Logger.Info($" {host}");
+            Logger.Info($"Websockets try open {host}");
+            isEnabled = true;
 
             // TODO secure WSS protocol
             ws = new WebSocket($"ws://{host}");
+            ws.OnOpen += (sender, e) =>
+            {
+                Logger.Info("WebSockets OnOpen");
+            };
             ws.OnMessage += (sender, e) =>
             {
-                Logger.Info($"[OnMessage] Thread: {currentThread()} msg: {e.Data}");
+                Logger.Info($"WebSockets OnMessage msg: {e.Data}");
+
+                //MultiThreadingUtil.dispatcherMain.Invoke(() =>
+                //{
+                //    Logger.Info($"Websockets Invoke Thread: {currentThread()} msg: {e.Data}");
+                //});
+            };
+            ws.OnError += (sender, args) =>
+            {
+                Logger.Info($"WebSockets [OnError] Message: {args.Message} Exception: {args.Exception}");
+            };
+            ws.OnClose += (sender, e) =>
+            {
+                Logger.Info($"WebSockets [OnClose] {e.Code} Reason: {e.Reason}");
 
                 MultiThreadingUtil.dispatcherMain.Invoke(() =>
                 {
-                    Logger.Info($"[Invoke] Thread: {currentThread()} msg: {e.Data}");
+                    if (isEnabled)
+                    {
+                        reconnectionTaskToken = new CancellationTokenSource();
+                        ScheduleReconnect(reconnectionTaskToken.Token);
+                    }
                 });
             };
             ws.ConnectAsync();
@@ -28,14 +53,41 @@ namespace BgMatchResultRecorder
 
         public static void Close()
         {
+            Logger.Info("Websockets Close");
+
+            isEnabled = false;
+            if (reconnectionTaskToken != null && !reconnectionTaskToken.IsCancellationRequested)
+            {
+                reconnectionTaskToken.Cancel();
+                reconnectionTaskToken = null;
+            }
+
             if (ws == null) return;
-            Logger.Info("");
 
             ws.CloseAsync(CloseStatusCode.Normal);
 
             // Probably ws instance could be garbage collected before
             // CloseAsync finishes, but we dont care 
             ws = null;
+        }
+
+        public static async void ScheduleReconnect(CancellationToken token)
+        {
+            Logger.Info($"WebSockets schedule reconnect in {Settings.WS_RECONNECT_DELAY.TotalSeconds} seconds");
+            try
+            {
+                await Task.Delay(Settings.WS_RECONNECT_DELAY, token);
+
+                if (isEnabled)
+                {
+                    reconnectionTaskToken = null;
+                    Open();
+                }
+            }
+            catch
+            {
+                Logger.Info("Websockets reconnection was cancelled!");
+            }
         }
 
         private static string currentThread()

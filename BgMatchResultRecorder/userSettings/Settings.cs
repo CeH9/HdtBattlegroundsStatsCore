@@ -18,6 +18,8 @@ namespace BgMatchResultRecorder
     public static class Settings
     {
         public static bool IsPluginEnabled = true;
+        public static System.TimeSpan WS_RECONNECT_DELAY = System.TimeSpan.FromMilliseconds(15_000);
+
         public static Config config = null;
 
         public static void LoadConfig()
