@@ -9,9 +9,10 @@ namespace BgMatchResultRecorder
 
         public static void Open()
         {
-            var host = "localhost:50000";
+            var host = Settings.config.websocketsServerAddress;
             Logger.Info($" {host}");
 
+            // TODO secure WSS protocol
             ws = new WebSocket($"ws://{host}");
             ws.OnMessage += (sender, e) =>
             {
@@ -32,8 +33,8 @@ namespace BgMatchResultRecorder
 
             ws.CloseAsync(CloseStatusCode.Normal);
 
-            // Probably ws instance could be garbage collected before CloseAsync'
-            // recieve response, but we dont care 
+            // Probably ws instance could be garbage collected before
+            // CloseAsync finishes, but we dont care 
             ws = null;
         }
 

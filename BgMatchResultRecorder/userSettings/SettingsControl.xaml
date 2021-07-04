@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="BgMatchResultRecorder.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BgMatchResultRecorder"                            
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" >
+
+    <StackPanel x:Name="panel" HorizontalAlignment="Left">
+        <DockPanel Margin="10">
+            <Label Content="Websockets Host Address:" FontSize="16"></Label>
+            <TextBox Name="InputHostAddress" Text="localhost:12345" FontSize="16"  VerticalAlignment="Center"  Width="500" TextWrapping="Wrap" HorizontalAlignment="Right"></TextBox>
+        </DockPanel>
+    </StackPanel>
+</UserControl>
