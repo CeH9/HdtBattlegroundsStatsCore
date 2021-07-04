@@ -15,9 +15,12 @@ namespace BgMatchResultRecorder
 
             Settings.IsPluginEnabled = true;
 
-            // TODO Init websockets
-            Thread.CurrentThread.Name = "MainThread";
+            if (Thread.CurrentThread.Name == null)
+            {
+                Thread.CurrentThread.Name = "MainThread";
+            }
             MultiThreadingUtil.dispatcherMain = Dispatcher.CurrentDispatcher;
+
             WebSockets.Open();
 
             GameEvents.OnInMenu.Add(CoreEventsHandler.OnInMenu);
@@ -52,7 +55,7 @@ namespace BgMatchResultRecorder
             //var card = Database.GetCardFromId("TB_BaconUps_093");
             //Logger.Info($"Card Id: {card.Id} Name: {card.Name}");
 
-            WebSockets.ws.SendAsync("Hello Dude!", ((completed) => {}));
+            WebSockets.ws.SendAsync("Hello Dude!", ((completed) => { }));
         }
 
         public void OnUpdate()
