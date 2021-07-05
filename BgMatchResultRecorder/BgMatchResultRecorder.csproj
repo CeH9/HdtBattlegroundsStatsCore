@@ -65,10 +65,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="data\MatchState.cs" />
     <Compile Include="userSettings\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="utils\BattlegroundsUtils.cs" />
+    <Compile Include="utils\GameUtils.cs" />
     <Compile Include="BgMatchResultRecorderPlugin.cs" />
     <Compile Include="CoreEventsHandler.cs" />
     <Compile Include="utils\Logger.cs" />

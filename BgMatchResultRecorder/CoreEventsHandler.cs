@@ -1,131 +1,123 @@
 ﻿using System.Linq;
+using BgMatchResultRecorder.data;
 using HearthDb.Enums;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
 using Hearthstone_Deck_Tracker.Hearthstone.Entities;
 using Core = Hearthstone_Deck_Tracker.API.Core;
-using BgUtils = Hearthstone_Deck_Tracker.Hearthstone.BattlegroundsUtils;
-using System;
 
 namespace BgMatchResultRecorder
 {
     public class CoreEventsHandler
     {
+        private static bool shouldCheckForOpponentHero = false;
+
+        internal static void resetState()
+        {
+            shouldCheckForOpponentHero = false;
+        }
+
         internal static void GameStart()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("CoreEvents GameStart");
 
-            if (Hearthstone_Deck_Tracker.Core.Game.IsBattlegroundsMatch)
-            {
-                try
-                {
-                    var gameId = Core.Game.CurrentGameStats.GameId;
-                    var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
-
-                    Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
-
-                    Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
-                    Logger.Info($"Region: {Core.Game.CurrentRegion}");
-                }
-                catch (Exception e)
-                {
-                    Logger.Info($"Catch: {e.Message}");
-                }
-            }
+            OnDebugButtonClicked();
         }
 
         internal static void OnGameEnd()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameEnd");
+            shouldCheckForOpponentHero = false;
 
-            if (Hearthstone_Deck_Tracker.Core.Game.IsBattlegroundsMatch)
-            {
-
-            }
+            OnDebugButtonClicked();
         }
 
         internal static void OnInMenu()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnInMenu");
 
-            try
-            {
-                Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
-                Logger.Info($"Region: {Core.Game.CurrentRegion}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"Catch: {e.Message}");
-            }
+            OnDebugButtonClicked();
         }
 
         internal static void OnModeChanged(Mode mode)
         {
             Logger.Info($"OnModeChanged: {mode}");
+
+            //if (GameUtils.IsBattlegroundsMatch()) return;
+            OnDebugButtonClicked();
+
         }
         internal static void OnGameWon()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameWon");
         }
         internal static void OnGameLost()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameLost");
         }
         internal static void OnGameTied()
         {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameTied");
+        }
+
+        internal static void OnOpponentCreateInPlay(Hearthstone_Deck_Tracker.Hearthstone.Card card)
+        {
+            if (!GameUtils.IsBattlegroundsMatch()) return;
+            if (!shouldCheckForOpponentHero || card == null || card.Type != GameUtils.CARD_TYPE_HERO) return;
+
+            Logger.Info($"OnOpponentCreateInPlay Hero: {card.LocalizedName}");
+
+            shouldCheckForOpponentHero = false;
+            
+            var hero = new Hero();
+            hero.Id = card.Id;
+            hero.Name = card.Name;
+            hero.DbId = card.DbfIf;
+
+            MatchState.instance.LastOpponentHero = hero;
         }
 
         internal static void TurnStart(ActivePlayer player)
         {
-            var turn = Hearthstone_Deck_Tracker.Core.Game.GetTurnNumber();
+            if (!GameUtils.IsBattlegroundsMatch()) return;
 
-            if (BattlegroundsUtils.IsCombatPhase(player))
+            if (GameUtils.IsCombatPhase(player))
             {
-                Logger.Info($"TurnStart: {turn} Combat Phase");
-                PrintPlayerBoard();
-
-                var gameId = Core.Game.CurrentGameStats.GameId;
-                var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
-                Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
+                Logger.Info($"TurnStart: Combat Phase");
+                shouldCheckForOpponentHero = true;
+                //PrintPlayerBoard();
             }
             else
             {
-                Logger.Info($"TurnStart: {turn} Shopping Phase");
+                Logger.Info($"TurnStart: Shopping Phase");
+                shouldCheckForOpponentHero = false;
             }
+
+            OnDebugButtonClicked();
         }
 
         public static void OnDebugButtonClicked()
         {
             Logger.Info("==== OnDebugButtonClicked ====");
-            try
-            {
-                var gameId = Core.Game.CurrentGameStats.GameId;
-                var availableRaces = BgUtils.GetAvailableRaces(gameId).ToList();
 
-                Logger.Info($"AvailableRaces: {String.Join(", ", availableRaces)}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"AvailableRaces Catch: {e.Message}");
-            }
+            GameUtils.GetAvailableRaces();
+            GameUtils.GetBattlegroundsRank();
+            GameUtils.GetRegion();
+            GameUtils.GetTurnNumber();
 
-            try
-            {
-                Logger.Info($"Rank: {Core.Game.BattlegroundsRatingInfo.Rating}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"Rank Catch: {e.Message}");
-            }
-            try
-            {
-                Logger.Info($"Region: {Core.Game.CurrentRegion}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"Region Catch: {e.Message}");
-            }
+            GameUtils.GetPlayerHero();
+            GameUtils.GetOpponentHero();
+
+            GameUtils.GetBattlegroundsPlace();
+            GameUtils.GetBattlegroundsAllPlaces();
+
+            Logger.Info("======== OnDebug ========");
         }
 
         public static void PrintPlayerBoard()

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using BgMatchResultRecorder.data;
 using Hearthstone_Deck_Tracker.API;
 using Hearthstone_Deck_Tracker.Plugins;
 using MahApps.Metro.Controls;
@@ -14,6 +15,13 @@ namespace BgMatchResultRecorder
         private Flyout settingsFlyout;
         private SettingsControl settingsControl;
 
+        public string Name => "Battlegrounds Stats Core";
+        public string Description => "Stats provider for stream overlay, e.g. match history";
+        public string ButtonText => "Settings";
+        public string Author => "github.com/CeH9";
+        public Version Version => new Version(1, 0, 0);
+        public MenuItem MenuItem => null;
+
         public void OnLoad()
         {
             Logger.Info("Plugin OnLoad");
@@ -22,41 +30,12 @@ namespace BgMatchResultRecorder
             Settings.IsPluginEnabled = true;
             Settings.LoadConfig();
 
-            // Setup MultiThreading' stuff
-            if (Thread.CurrentThread.Name == null)
-            {
-                Thread.CurrentThread.Name = "MainThread";
-            }
-            MultiThreadingUtil.dispatcherMain = Dispatcher.CurrentDispatcher;
+            MatchState.instance = new MatchState();
 
+            InitMultiThreadingStuff();
             WebSockets.Open();
-
-            // Setup Settings UI
-            settingsFlyout = new Flyout();
-            settingsFlyout.Name = "BgSettingsFlyout";
-            settingsFlyout.Position = Position.Left;
-            Panel.SetZIndex(settingsFlyout, 100);
-            settingsFlyout.Header = "Battlegrounds Match Data Settings";
-            settingsControl = new SettingsControl();
-            settingsFlyout.Content = settingsControl;
-            settingsFlyout.ClosingFinished += (sender, args) =>
-            {
-                Settings.config.websocketsServerAddress = settingsControl.InputHostAddress.Text;
-                Settings.config.save();
-            };
-            Core.MainWindow.Flyouts.Items.Add(settingsFlyout);
-
-            // Register GameEvents' Callbacks
-            GameEvents.OnInMenu.Add(CoreEventsHandler.OnInMenu);
-            GameEvents.OnModeChanged.Add(CoreEventsHandler.OnModeChanged);
-
-            GameEvents.OnGameStart.Add(CoreEventsHandler.GameStart);
-            GameEvents.OnGameEnd.Add(CoreEventsHandler.OnGameEnd);
-            GameEvents.OnGameWon.Add(CoreEventsHandler.OnGameWon);
-            GameEvents.OnGameLost.Add(CoreEventsHandler.OnGameLost);
-            GameEvents.OnGameTied.Add(CoreEventsHandler.OnGameTied);
-
-            GameEvents.OnTurnStart.Add(CoreEventsHandler.TurnStart);
+            InitSettingsUi();
+            InitGameEvents();
         }
 
         public void OnUnload()
@@ -65,6 +44,8 @@ namespace BgMatchResultRecorder
             Logger.Info("Plugin OnUnload");
 
             WebSockets.Close();
+            CoreEventsHandler.resetState();
+            MatchState.instance = null;
 
             Settings.IsPluginEnabled = false;
             Settings.UnloadConfig();
@@ -90,16 +71,45 @@ namespace BgMatchResultRecorder
             // called every ~100ms
         }
 
-        public string Name => "Battlegrounds Stats Core";
+        private void InitMultiThreadingStuff()
+        {
+            if (Thread.CurrentThread.Name == null)
+            {
+                Thread.CurrentThread.Name = "MainThread";
+            }
+            MultiThreadingUtil.dispatcherMain = Dispatcher.CurrentDispatcher;
+        }
 
-        public string Description => "Stats provider for stream overlay, e.g. match history";
+        private void InitGameEvents()
+        {
+            GameEvents.OnInMenu.Add(CoreEventsHandler.OnInMenu);
+            GameEvents.OnModeChanged.Add(CoreEventsHandler.OnModeChanged);
 
-        public string ButtonText => "Settings";
+            GameEvents.OnGameStart.Add(CoreEventsHandler.GameStart);
+            GameEvents.OnGameEnd.Add(CoreEventsHandler.OnGameEnd);
+            GameEvents.OnGameWon.Add(CoreEventsHandler.OnGameWon);
+            GameEvents.OnGameLost.Add(CoreEventsHandler.OnGameLost);
+            GameEvents.OnGameTied.Add(CoreEventsHandler.OnGameTied);
+            GameEvents.OnOpponentCreateInPlay.Add(CoreEventsHandler.OnOpponentCreateInPlay);
 
-        public string Author => "github.com/CeH9";
+            GameEvents.OnTurnStart.Add(CoreEventsHandler.TurnStart);
+        }
 
-        public Version Version => new Version(1, 0, 0);
-
-        public MenuItem MenuItem => null;
+        private void InitSettingsUi()
+        {
+            settingsFlyout = new Flyout();
+            settingsFlyout.Name = "BgSettingsFlyout";
+            settingsFlyout.Position = Position.Left;
+            Panel.SetZIndex(settingsFlyout, 100);
+            settingsFlyout.Header = "Battlegrounds Match Data Settings";
+            settingsControl = new SettingsControl();
+            settingsFlyout.Content = settingsControl;
+            settingsFlyout.ClosingFinished += (sender, args) =>
+            {
+                Settings.config.websocketsServerAddress = settingsControl.InputHostAddress.Text;
+                Settings.config.save();
+            };
+            Core.MainWindow.Flyouts.Items.Add(settingsFlyout);
+        }
     }
 }
