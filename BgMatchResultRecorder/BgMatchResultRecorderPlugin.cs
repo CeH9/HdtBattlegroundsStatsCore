@@ -30,7 +30,7 @@ namespace BgMatchResultRecorder
             Settings.IsPluginEnabled = true;
             Settings.LoadConfig();
 
-            MatchState.instance = new MatchState();
+            AppState.matchState = AppState.DefaultMatchState();
 
             InitMultiThreadingStuff();
             WebSockets.Open();
@@ -45,7 +45,7 @@ namespace BgMatchResultRecorder
 
             WebSockets.Close();
             CoreEventsHandler.resetState();
-            MatchState.instance = null;
+            AppState.matchState = null;
 
             Settings.IsPluginEnabled = false;
             Settings.UnloadConfig();

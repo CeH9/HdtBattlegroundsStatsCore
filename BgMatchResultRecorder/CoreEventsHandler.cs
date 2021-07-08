@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using BgMatchResultRecorder.data;
+using BgMatchResultRecorder.network;
 using HearthDb.Enums;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
@@ -75,12 +76,12 @@ namespace BgMatchResultRecorder
 
             shouldCheckForOpponentHero = false;
             
-            var hero = new Hero();
-            hero.Id = card.Id;
-            hero.Name = card.Name;
-            hero.DbId = card.DbfIf;
+            //var hero = new Hero();
+            //hero.Id = card.Id;
+            //hero.Name = card.Name;
+            //hero.DbId = card.DbfIf;
 
-            MatchState.instance.LastOpponentHero = hero;
+            //MatchState.instance.LastOpponentHero = hero;
         }
 
         internal static void TurnStart(ActivePlayer player)
@@ -106,16 +107,20 @@ namespace BgMatchResultRecorder
         {
             Logger.Info("==== OnDebugButtonClicked ====");
 
-            GameUtils.GetAvailableRaces();
-            GameUtils.GetBattlegroundsRank();
-            GameUtils.GetRegion();
-            GameUtils.GetTurnNumber();
+            var matchStateJson= Serializer.toJson(AppState.matchState);
+            Logger.Info(matchStateJson);
+            
 
-            GameUtils.GetPlayerHero();
-            GameUtils.GetOpponentHero();
+            //GameUtils.GetAvailableRaces();
+            //GameUtils.GetBattlegroundsRank();
+            //GameUtils.GetRegion();
+            //GameUtils.GetTurnNumber();
 
-            GameUtils.GetBattlegroundsPlace();
-            GameUtils.GetBattlegroundsAllPlaces();
+            //GameUtils.GetPlayerHero();
+            //GameUtils.GetOpponentHero();
+
+            //GameUtils.GetBattlegroundsPlace();
+            //GameUtils.GetBattlegroundsAllPlaces();
 
             Logger.Info("======== OnDebug ========");
         }
@@ -131,7 +136,11 @@ namespace BgMatchResultRecorder
 
             entities.ToList().ForEach(entity =>
             {
-                Logger.Info($"Entity Id: {entity.Id} CardId: {entity.CardId} Name: {entity.Name}");
+                var id = entity.Id;
+                var CardId = entity.CardId;
+                var isLevelTwo = entity.GetTag(GameTag.BACON_MINION_IS_LEVEL_TWO);                
+
+                Logger.Info($"Entity Id: {id} CardId: {CardId} IsLevelTwo: {isLevelTwo}");
             });
 
             Logger.Info($"---- Found {entities.Count()} entities ----");
