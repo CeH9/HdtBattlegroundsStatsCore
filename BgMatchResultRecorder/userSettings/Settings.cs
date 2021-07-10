@@ -3,26 +3,26 @@ using System.IO;
 
 namespace BgMatchResultRecorder
 {
-    public class Config
+    internal class Config
     {
-        public static readonly string _configLocation = Hearthstone_Deck_Tracker.Config.AppDataPath + @"\Plugins\BgMatchResultRecorder.config";
+        internal static readonly string _configLocation = Hearthstone_Deck_Tracker.Config.AppDataPath + @"\Plugins\BgMatchResultRecorder.config";
 
-        public string websocketsServerAddress = "localhost:777";
+        internal string websocketsServerAddress = "localhost:777";
 
-        public void save()
+        internal void save()
         {
             File.WriteAllText(_configLocation, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
     }
 
-    public static class Settings
+    internal static class Settings
     {
-        public static bool IsPluginEnabled = true;
-        public static System.TimeSpan WS_RECONNECT_DELAY = System.TimeSpan.FromMilliseconds(150_000);
+        internal static bool IsPluginEnabled = true;
+        internal static System.TimeSpan WS_RECONNECT_DELAY = System.TimeSpan.FromMilliseconds(150_000);
 
-        public static Config config = null;
+        internal static Config config = null;
 
-        public static void LoadConfig()
+        internal static void LoadConfig()
         {
             try
             {
@@ -37,7 +37,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void UnloadConfig()
+        internal static void UnloadConfig()
         {
             config = null;
         }

@@ -1,16 +1,18 @@
-﻿using System.Windows.Controls;
+﻿using BgMatchResultRecorder.data;
+using BgMatchResultRecorder.network;
+using System.Windows.Controls;
 
 namespace BgMatchResultRecorder
 {
     public partial class SettingsControl : UserControl
     {
-        public SettingsControl()
+        internal SettingsControl()
         {
             InitializeComponent();
             ApplyState(Settings.config);
         }
 
-        public void ApplyState(Config cfg)
+        internal void ApplyState(Config cfg)
         {
             InputHostAddress.Text= cfg.websocketsServerAddress;
             InputHostAddress.CaretIndex = InputHostAddress.Text.Length;
@@ -18,7 +20,24 @@ namespace BgMatchResultRecorder
 
         private void DebugButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            CoreEventsHandler.OnDebugButtonClicked();
+            Logger.Info("==== OnDebugButtonClicked ====");
+
+            var matchStateJson = Serializer.toJson(AppState.matchState);
+            Logger.Info(matchStateJson);
+
+
+            //GameUtils.GetAvailableRaces();
+            //GameUtils.GetBattlegroundsRank();
+            //GameUtils.GetRegion();
+            //GameUtils.GetTurnNumber();
+
+            //GameUtils.GetPlayerHero();
+            //GameUtils.GetOpponentHero();
+
+            //GameUtils.GetBattlegroundsPlace();
+            //GameUtils.GetBattlegroundsAllPlaces();
+
+            Logger.Info("======== OnDebug ========");
         }
     }
 }

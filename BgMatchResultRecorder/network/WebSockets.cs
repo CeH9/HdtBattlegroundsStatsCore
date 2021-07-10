@@ -4,13 +4,13 @@ using WebSocketSharp;
 
 namespace BgMatchResultRecorder
 {
-    public class WebSockets
+    internal class WebSockets
     {
-        public static WebSocket ws;
+        internal static WebSocket ws;
         private static bool isEnabled = false;
         private static CancellationTokenSource reconnectionTaskToken = null;
 
-        public static void Open()
+        internal static void Open()
         {
             var host = Settings.config.websocketsServerAddress;
             Logger.Info($"Websockets try open {host}");
@@ -52,7 +52,7 @@ namespace BgMatchResultRecorder
             ws.ConnectAsync();
         }
 
-        public static void Close()
+        internal static void Close()
         {
             Logger.Info("Websockets Close");
 
@@ -72,7 +72,7 @@ namespace BgMatchResultRecorder
             ws = null;
         }
 
-        public static async void ScheduleReconnect(CancellationToken token)
+        internal static async void ScheduleReconnect(CancellationToken token)
         {
             Logger.Info($"WebSockets schedule reconnect in {Settings.WS_RECONNECT_DELAY.TotalSeconds} seconds");
             try

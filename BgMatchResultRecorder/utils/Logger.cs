@@ -11,7 +11,7 @@ namespace BgMatchResultRecorder
     {
         const bool IsLogsEnabled = true;
 
-        public static void Info(string msg)
+        internal static void Info(string msg)
         {
             if (!IsLogsEnabled) return;
 

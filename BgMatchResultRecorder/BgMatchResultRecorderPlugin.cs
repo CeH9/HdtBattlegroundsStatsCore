@@ -44,7 +44,7 @@ namespace BgMatchResultRecorder
             Logger.Info("Plugin OnUnload");
 
             WebSockets.Close();
-            CoreEventsHandler.resetState();
+            GameEventsHandler.resetState();
             AppState.matchState = null;
 
             Settings.IsPluginEnabled = false;
@@ -54,14 +54,6 @@ namespace BgMatchResultRecorder
         public void OnButtonPress()
         {
             Logger.Info("Plugin OnButtonPress");
-
-            //Entity[] list = Helper.DeepClone<Dictionary<int, Entity>>(Hearthstone_Deck_Tracker.API.Core.Game.Entities).Values.ToArray<Entity>();
-
-            //var card = Database.GetCardFromDbfId(x.Key, false);
-            //var card = Database.GetCardFromId("TB_BaconUps_093");
-            //Logger.Info($"Card Id: {card.Id} Name: {card.Name}");
-
-            //WebSockets.ws.SendAsync("Hello Dude!", (completed) => { });
 
             settingsFlyout.IsOpen = true;
         }
@@ -82,17 +74,17 @@ namespace BgMatchResultRecorder
 
         private void InitGameEvents()
         {
-            GameEvents.OnInMenu.Add(CoreEventsHandler.OnInMenu);
-            GameEvents.OnModeChanged.Add(CoreEventsHandler.OnModeChanged);
+            GameEvents.OnInMenu.Add(GameEventsHandler.OnInMenu);
+            GameEvents.OnModeChanged.Add(GameEventsHandler.OnModeChanged);
 
-            GameEvents.OnGameStart.Add(CoreEventsHandler.GameStart);
-            GameEvents.OnGameEnd.Add(CoreEventsHandler.OnGameEnd);
-            GameEvents.OnGameWon.Add(CoreEventsHandler.OnGameWon);
-            GameEvents.OnGameLost.Add(CoreEventsHandler.OnGameLost);
-            GameEvents.OnGameTied.Add(CoreEventsHandler.OnGameTied);
-            GameEvents.OnOpponentCreateInPlay.Add(CoreEventsHandler.OnOpponentCreateInPlay);
+            GameEvents.OnGameStart.Add(GameEventsHandler.GameStart);
+            GameEvents.OnGameEnd.Add(GameEventsHandler.OnGameEnd);
+            GameEvents.OnGameWon.Add(GameEventsHandler.OnGameWon);
+            GameEvents.OnGameLost.Add(GameEventsHandler.OnGameLost);
+            GameEvents.OnGameTied.Add(GameEventsHandler.OnGameTied);
+            GameEvents.OnOpponentCreateInPlay.Add(GameEventsHandler.OnOpponentCreateInPlay);
 
-            GameEvents.OnTurnStart.Add(CoreEventsHandler.TurnStart);
+            GameEvents.OnTurnStart.Add(GameEventsHandler.TurnStart);
         }
 
         private void InitSettingsUi()

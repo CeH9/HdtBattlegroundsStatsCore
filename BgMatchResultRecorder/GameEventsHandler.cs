@@ -1,15 +1,11 @@
-﻿using System.Linq;
-using BgMatchResultRecorder.data;
+﻿using BgMatchResultRecorder.data;
 using BgMatchResultRecorder.network;
-using HearthDb.Enums;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
-using Hearthstone_Deck_Tracker.Hearthstone.Entities;
-using Core = Hearthstone_Deck_Tracker.API.Core;
 
 namespace BgMatchResultRecorder
 {
-    public class CoreEventsHandler
+    internal class GameEventsHandler
     {
         private static bool shouldCheckForOpponentHero = false;
 
@@ -23,7 +19,7 @@ namespace BgMatchResultRecorder
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("CoreEvents GameStart");
 
-            OnDebugButtonClicked();
+            //OnDebugButtonClicked();
         }
 
         internal static void OnGameEnd()
@@ -32,7 +28,7 @@ namespace BgMatchResultRecorder
             Logger.Info("OnGameEnd");
             shouldCheckForOpponentHero = false;
 
-            OnDebugButtonClicked();
+            //OnDebugButtonClicked();
         }
 
         internal static void OnInMenu()
@@ -40,7 +36,7 @@ namespace BgMatchResultRecorder
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnInMenu");
 
-            OnDebugButtonClicked();
+            //OnDebugButtonClicked();
         }
 
         internal static void OnModeChanged(Mode mode)
@@ -48,19 +44,21 @@ namespace BgMatchResultRecorder
             Logger.Info($"OnModeChanged: {mode}");
 
             //if (GameUtils.IsBattlegroundsMatch()) return;
-            OnDebugButtonClicked();
-
+            //OnDebugButtonClicked();
         }
+
         internal static void OnGameWon()
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameWon");
         }
+
         internal static void OnGameLost()
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameLost");
         }
+
         internal static void OnGameTied()
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
@@ -100,50 +98,7 @@ namespace BgMatchResultRecorder
                 shouldCheckForOpponentHero = false;
             }
 
-            OnDebugButtonClicked();
-        }
-
-        public static void OnDebugButtonClicked()
-        {
-            Logger.Info("==== OnDebugButtonClicked ====");
-
-            var matchStateJson= Serializer.toJson(AppState.matchState);
-            Logger.Info(matchStateJson);
-            
-
-            //GameUtils.GetAvailableRaces();
-            //GameUtils.GetBattlegroundsRank();
-            //GameUtils.GetRegion();
-            //GameUtils.GetTurnNumber();
-
-            //GameUtils.GetPlayerHero();
-            //GameUtils.GetOpponentHero();
-
-            //GameUtils.GetBattlegroundsPlace();
-            //GameUtils.GetBattlegroundsAllPlaces();
-
-            Logger.Info("======== OnDebug ========");
-        }
-
-        public static void PrintPlayerBoard()
-        {
-            Logger.Info("PrintPlayerBoard");
-
-            var board = Core.Game.Player.Board;
-            IOrderedEnumerable<Entity> entities = board.Where(x => x.IsMinion)
-                .Select(x => x.Clone())
-                .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION));
-
-            entities.ToList().ForEach(entity =>
-            {
-                var id = entity.Id;
-                var CardId = entity.CardId;
-                var isLevelTwo = entity.GetTag(GameTag.BACON_MINION_IS_LEVEL_TWO);                
-
-                Logger.Info($"Entity Id: {id} CardId: {CardId} IsLevelTwo: {isLevelTwo}");
-            });
-
-            Logger.Info($"---- Found {entities.Count()} entities ----");
-        }
+            //OnDebugButtonClicked();
+        } 
     }
 }

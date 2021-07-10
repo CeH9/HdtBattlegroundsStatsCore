@@ -11,24 +11,24 @@ namespace BgMatchResultRecorder
 {
     class GameUtils
     {
-        public const string CARD_TYPE_HERO = "Hero";
+        internal const string CARD_TYPE_HERO = "Hero";
 
         public static Guid GetGameId()
         {
             return Core.Game.CurrentGameStats.GameId;
         }
 
-        public static bool IsShoppingPhase(ActivePlayer player)
+        internal static bool IsShoppingPhase(ActivePlayer player)
         {
             return player == ActivePlayer.Player;
         }
 
-        public static bool IsCombatPhase(ActivePlayer player)
+        internal static bool IsCombatPhase(ActivePlayer player)
         {
             return player == ActivePlayer.Opponent;
         }
 
-        public static bool IsBattlegroundsMatch()
+        internal static bool IsBattlegroundsMatch()
         {
             return Core.Game.IsBattlegroundsMatch;
         }
@@ -40,7 +40,7 @@ namespace BgMatchResultRecorder
         // =================================== DEBUG ZONE ============================================
 
         // IList<HearthDb.Enums.Race>
-        public static void GetAvailableRaces()
+        internal static void GetAvailableRaces()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void GetBattlegroundsRank()
+        internal static void GetBattlegroundsRank()
         {
             try
             {
@@ -66,7 +66,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void GetRegion()
+        internal static void GetRegion()
         {
             try
             {
@@ -77,9 +77,9 @@ namespace BgMatchResultRecorder
             {
                 Logger.Info($"GetRegion Catch: {e.Message}");
             }
-        }   
+        }
 
-        public static void GetTurnNumber()
+        internal static void GetTurnNumber()
         {
             try
             {
@@ -92,7 +92,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static Entity GetHero(int playerId)
+        internal static Entity GetHero(int playerId)
         {
             //var heroId = Core.Game.PlayerEntity.GetTag(GameTag.HERO_ENTITY);                
             Entity hero = Core.Game.Entities.Values
@@ -102,7 +102,7 @@ namespace BgMatchResultRecorder
             return hero;
         }
 
-        public static void GetPlayerHero()
+        internal static void GetPlayerHero()
         {
             try
             {
@@ -115,7 +115,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void GetOpponentHero()
+        internal static void GetOpponentHero()
         {
             try
             {
@@ -128,7 +128,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void GetBattlegroundsPlace()
+        internal static void GetBattlegroundsPlace()
         {
             try
             {
@@ -143,7 +143,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        public static void GetBattlegroundsAllPlaces()
+        internal static void GetBattlegroundsAllPlaces()
         {
             try
             {
@@ -163,6 +163,27 @@ namespace BgMatchResultRecorder
             {
                 Logger.Info($"GetBattlegroundsAllPlaces Catch: {e.Message}");
             }
+        }
+
+        internal static void PrintPlayerBoard()
+        {
+            Logger.Info("PrintPlayerBoard");
+
+            var board = Core.Game.Player.Board;
+            IOrderedEnumerable<Entity> entities = board.Where(x => x.IsMinion)
+                .Select(x => x.Clone())
+                .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION));
+
+            entities.ToList().ForEach(entity =>
+            {
+                var id = entity.Id;
+                var CardId = entity.CardId;
+                var isLevelTwo = entity.GetTag(GameTag.BACON_MINION_IS_LEVEL_TWO);
+
+                Logger.Info($"Entity Id: {id} CardId: {CardId} IsLevelTwo: {isLevelTwo}");
+            });
+
+            Logger.Info($"---- Found {entities.Count()} entities ----");
         }
     }
 }
