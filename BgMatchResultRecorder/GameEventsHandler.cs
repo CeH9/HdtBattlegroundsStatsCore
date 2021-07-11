@@ -52,9 +52,11 @@ namespace BgMatchResultRecorder
 
             if (GameUtils.IsBattlegroundsMatch()) return;
 
-            if(mode == Mode.GAMEPLAY)
+            // GAMEPLAY triggers after GameStart but before First Turn.
+            // Info about Races already available.
+            if (mode == Mode.GAMEPLAY)
             {
-                //AppState.matchState
+                AppState.matchState.AvailableRaces = GameUtils.GetAvailableRaces();
             }
         }
 

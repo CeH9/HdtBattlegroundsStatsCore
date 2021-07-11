@@ -108,13 +108,17 @@ namespace BgMatchResultRecorder
 
         internal static Board GetBoard()
         {
-            List<Minion> minions = Core.Game.Player.Board
-                .Where(x => x.IsMinion)
-                .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION))
-                .Select(x => ToMinion(x))
-                .ToList();
+            try
+            {
+                List<Minion> minions = Core.Game.Player.Board
+                    .Where(x => x.IsMinion)
+                    .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION))
+                    .Select(x => ToMinion(x))
+                    .ToList();
 
-            return new Board { Minions = minions };
+                return new Board { Minions = minions };
+            }
+            catch (Exception e) { return new Board { DebugMessage = e.ToString() }; }
         }
 
         private static Minion ToMinion(Entity entity)
@@ -137,24 +141,27 @@ namespace BgMatchResultRecorder
             return minion;
         }
 
-
-
-        // =================================== DEBUG ZONE ============================================
-
-        // IList<HearthDb.Enums.Race>
-        internal static void GetAvailableRaces()
+        internal static AvailableRaces GetAvailableRaces()
         {
             try
             {
-                var result = BattlegroundsUtils.GetAvailableRaces(GetGameId()).ToList();
-                Logger.Info($"getAvailableRaces: {String.Join(", ", result)}");
+                return new AvailableRaces
+                {
+                    Races = BattlegroundsUtils.GetAvailableRaces(GetGameId())
+                    .Select(race => new data.Race
+                    {
+                        Id = (int)race,
+                        Name = race.ToString()
+                    })
+                    .ToList()
+                };
             }
-            catch (Exception e)
-            {
-                Logger.Info($"getAvailableRaces Catch: {e.Message}");
-            }
+            catch (Exception e) { return new AvailableRaces { DebugMessage = e.ToString() }; }
         }
 
+
+
+        // =================================== DEBUG ZONE ============================================        
         internal static void GetBattlegroundsRank()
         {
             try

@@ -11,7 +11,7 @@ namespace BgMatchResultRecorder.data
         [JsonProperty]
         internal int DbId { get; set; } = GameUtils.INVALID_INT_ID;
         [JsonProperty]
-        internal int TurnWhenCaptured { get; set; } = 0;
+        internal int? TurnWhenCaptured { get; set; } = null;
     }
 
     internal class Minion
@@ -43,6 +43,9 @@ namespace BgMatchResultRecorder.data
     {
         [JsonProperty]
         internal List<Minion> Minions { get; set; } = new List<Minion>();
+
+        [JsonProperty]
+        internal string DebugMessage { get; set; } = null;
     }
 
     internal class Player
@@ -65,22 +68,33 @@ namespace BgMatchResultRecorder.data
         internal string Name { get; set; } = null;
     }
 
+    internal class AvailableRaces
+    {
+        [JsonProperty]
+        internal List<Race> Races { get; set; } = new List<Race>();
+
+        [JsonProperty]
+        internal string DebugMessage { get; set; } = null;
+    }
+
     internal class MatchState
     {
         [JsonProperty]
         internal Player Player { get; set; } = new Player();
-        //internal Opponent opponent { get; set; }
         [JsonProperty]
-        internal int Place { get; set; } = -1;
+        internal Player Opponent { get; set; } = new Player();
+        [JsonProperty]
+        internal int? Place { get; set; } = null;
         [JsonProperty]
         internal bool WasConceded { get; set; } = false;
         [JsonProperty]
-        internal List<Race> AvailableRaces { get; set; } = new List<Race>();
-        //internal int RankDiff{ get; set; }
+        internal AvailableRaces AvailableRaces { get; set; } = new AvailableRaces();
         [JsonProperty]
-        internal int Rank { get; set; } = -1;
+        internal int? RankDiff { get; set; } = null;
         [JsonProperty]
-        internal int LastPlayedTurn { get; set; } = -1;
+        internal int? Rank { get; set; } = null;
+        [JsonProperty]
+        internal int? LastPlayedTurn { get; set; } = null;
         [JsonProperty]
         internal DateTime? StartDateTime { get; set; } = null;
         [JsonProperty]
