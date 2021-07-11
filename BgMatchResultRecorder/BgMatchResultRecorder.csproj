@@ -72,6 +72,7 @@
     <Compile Include="userSettings\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="utils\DebugStuff.cs" />
     <Compile Include="utils\GameUtils.cs" />
     <Compile Include="BgMatchResultRecorderPlugin.cs" />
     <Compile Include="GameEventsHandler.cs" />

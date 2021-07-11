@@ -77,7 +77,7 @@ namespace BgMatchResultRecorder
             GameEvents.OnInMenu.Add(GameEventsHandler.OnInMenu);
             GameEvents.OnModeChanged.Add(GameEventsHandler.OnModeChanged);
 
-            GameEvents.OnGameStart.Add(GameEventsHandler.GameStart);
+            GameEvents.OnGameStart.Add(GameEventsHandler.OnGameStart);
             GameEvents.OnGameEnd.Add(GameEventsHandler.OnGameEnd);
             GameEvents.OnGameWon.Add(GameEventsHandler.OnGameWon);
             GameEvents.OnGameLost.Add(GameEventsHandler.OnGameLost);

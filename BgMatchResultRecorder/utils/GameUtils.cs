@@ -1,4 +1,6 @@
-﻿using HearthDb.Enums;
+﻿using BgMatchResultRecorder.data;
+using BgMatchResultRecorder.network;
+using HearthDb.Enums;
 using Hearthstone_Deck_Tracker;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
@@ -11,6 +13,9 @@ namespace BgMatchResultRecorder
 {
     class GameUtils
     {
+        internal const string INVALID_ID = "Unknown";
+        internal const int INVALID_INT_ID = -1;
+
         internal const string CARD_TYPE_HERO = "Hero";
 
         public static Guid GetGameId()
@@ -34,6 +39,103 @@ namespace BgMatchResultRecorder
         }
 
 
+        // =================================== Candidates to Stable ============================================
+        internal static DateTime? GetMatchStartDateTime()
+        {
+            try
+            {
+                var stats = Core.Game.CurrentGameStats;
+
+                return stats.StartTime;
+            }
+            catch (Exception e)
+            {
+                var msg = e.Message;
+                Logger.Info($"GetMatchStartDateTime Catch: {msg}");
+                return null;
+            }
+        }
+
+        internal static DateTime? GetMatchEndDateTime()
+        {
+            try
+            {
+                var stats = Core.Game.CurrentGameStats;
+
+                return stats.EndTime;
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"GetMatchEndDateTime Catch: {e.Message}");
+                return null;
+            }
+        }
+
+        internal static int GetTurnNumber()
+        {
+            return Core.Game.GetTurnNumber();
+        }
+
+        internal static int GetLastPlayedTurn()
+        {
+            try
+            {
+                var stats = Core.Game.CurrentGameStats;
+
+                return stats.Turns;
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"LastPlayedTurn Catch: {e.Message}");
+                return -1;
+            }
+        }
+
+        internal static bool WasConceded()
+        {
+            try
+            {
+                var stats = Core.Game.CurrentGameStats;
+
+                return stats.WasConceded;
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"WasConceded Catch: {e.Message}");
+                return false;
+            }
+        }
+
+        internal static Board GetBoard()
+        {
+            List<Minion> minions = Core.Game.Player.Board
+                .Where(x => x.IsMinion)
+                .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION))
+                .Select(x => ToMinion(x))
+                .ToList();
+
+            return new Board { Minions = minions };
+        }
+
+        private static Minion ToMinion(Entity entity)
+        {
+            Card dbCard = Database.GetCardFromId(entity.CardId);
+
+            Minion minion = new Minion
+            {
+                Id = entity.CardId,
+                DbId = dbCard.DbfIf,
+                Name = dbCard.Name,
+                ZonePosition = entity.GetTag(GameTag.ZONE_POSITION),
+                Health = entity.GetTag(GameTag.ATK),
+                Attack = entity.GetTag(GameTag.HEALTH),
+                TavernTier = entity.GetTag(GameTag.TECH_LEVEL),
+                IsGolden = entity.HasTag(GameTag.PREMIUM),
+                Poisonous = entity.HasTag(GameTag.POISONOUS)
+            };
+
+            return minion;
+        }
 
 
 
@@ -66,6 +168,68 @@ namespace BgMatchResultRecorder
             }
         }
 
+        internal static void GetPlayerInfo()
+        {
+            try
+            {
+                var result = Core.Game.Player.Name;
+                Logger.Info($"GetPlayerInfo: {result}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"GetPlayerInfo Catch: {e.Message}");
+            }
+        }
+
+        internal static void GetOpponentInfo()
+        {
+            try
+            {
+                var result = Core.Game.Opponent.Name;
+                Logger.Info($"GetOpponentInfo: {result}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"GetOpponentInfo Catch: {e.Message}");
+            }
+        }
+
+        internal static void GetAllHeroes()
+        {
+            try
+            {
+                Logger.Info($"--- Heroes ---");
+                Core.Game.Entities.Values
+                    .Where(x => x.HasTag(GameTag.PLAYER_LEADERBOARD_PLACE))
+                    .ToList()
+                    .ForEach(hero =>
+                    {
+                        if (hero.HasCardId)
+                        {
+                            var place = hero.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
+
+                            var card = Database.GetCardFromId(hero.CardId);
+                            var name = card.Name;
+                            var localizedName = card.LocalizedName;
+                            var blizzardId = card.DbfIf;
+
+                            Logger.Info($"Hero Name: {name} place: {place} LocalizedName: {localizedName} Id: {blizzardId}");
+                        }
+                        else
+                        {
+                            Logger.Info($"Hero CardId Not Found!");
+                        }
+                    });
+                Logger.Info($"--- End ---");
+
+                //Logger.Info($"GetAllEntities:\n{Serializer.toJson(result)}");
+            }
+            catch (Exception e)
+            {
+                Logger.Info($"GetAllEntities Catch: {e.Message}");
+            }
+        }
+
         internal static void GetRegion()
         {
             try
@@ -76,19 +240,6 @@ namespace BgMatchResultRecorder
             catch (Exception e)
             {
                 Logger.Info($"GetRegion Catch: {e.Message}");
-            }
-        }
-
-        internal static void GetTurnNumber()
-        {
-            try
-            {
-                var result = Core.Game.GetTurnNumber();
-                Logger.Info($"GetTurnNumber: {result}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"GetTurnNumber Catch: {e.Message}");
             }
         }
 
@@ -156,34 +307,13 @@ namespace BgMatchResultRecorder
                 foreach (var hero in heroes)
                 {
                     var place = hero.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
-                    Logger.Info($"Hero id: {hero.Id} cardId: {hero.CardId} name: {hero.Name} place: {place}");                        
+                    Logger.Info($"Hero id: {hero.Id} cardId: {hero.CardId} name: {hero.Name} place: {place}");
                 }
             }
             catch (Exception e)
             {
                 Logger.Info($"GetBattlegroundsAllPlaces Catch: {e.Message}");
             }
-        }
-
-        internal static void PrintPlayerBoard()
-        {
-            Logger.Info("PrintPlayerBoard");
-
-            var board = Core.Game.Player.Board;
-            IOrderedEnumerable<Entity> entities = board.Where(x => x.IsMinion)
-                .Select(x => x.Clone())
-                .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION));
-
-            entities.ToList().ForEach(entity =>
-            {
-                var id = entity.Id;
-                var CardId = entity.CardId;
-                var isLevelTwo = entity.GetTag(GameTag.BACON_MINION_IS_LEVEL_TWO);
-
-                Logger.Info($"Entity Id: {id} CardId: {CardId} IsLevelTwo: {isLevelTwo}");
-            });
-
-            Logger.Info($"---- Found {entities.Count()} entities ----");
         }
     }
 }

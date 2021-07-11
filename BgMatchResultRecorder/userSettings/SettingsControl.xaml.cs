@@ -1,5 +1,6 @@
 ﻿using BgMatchResultRecorder.data;
 using BgMatchResultRecorder.network;
+using BgMatchResultRecorder.utils;
 using System.Windows.Controls;
 
 namespace BgMatchResultRecorder
@@ -22,20 +23,24 @@ namespace BgMatchResultRecorder
         {
             Logger.Info("==== OnDebugButtonClicked ====");
 
-            var matchStateJson = Serializer.toJson(AppState.matchState);
-            Logger.Info(matchStateJson);
+            DebugStuff.LogAppState();
 
 
             //GameUtils.GetAvailableRaces();
             //GameUtils.GetBattlegroundsRank();
             //GameUtils.GetRegion();
-            //GameUtils.GetTurnNumber();
 
             //GameUtils.GetPlayerHero();
             //GameUtils.GetOpponentHero();
 
             //GameUtils.GetBattlegroundsPlace();
             //GameUtils.GetBattlegroundsAllPlaces();
+            
+            //GameUtils.GetStats();
+
+            //GameUtils.GetPlayerInfo();
+            //GameUtils.GetOpponentInfo();
+            //GameUtils.GetAllHeroes();
 
             Logger.Info("======== OnDebug ========");
         }

@@ -1,5 +1,4 @@
 ﻿using BgMatchResultRecorder.data;
-using BgMatchResultRecorder.network;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
 
@@ -14,21 +13,29 @@ namespace BgMatchResultRecorder
             shouldCheckForOpponentHero = false;
         }
 
-        internal static void GameStart()
+        internal static void OnGameStart()
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
-            Logger.Info("CoreEvents GameStart");
+            Logger.Info("OnGameStart");
 
-            //OnDebugButtonClicked();
+            // Refresh Match State
+            AppState.matchState = AppState.DefaultMatchState();
         }
 
         internal static void OnGameEnd()
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameEnd");
+
             shouldCheckForOpponentHero = false;
 
-            //OnDebugButtonClicked();
+            MatchState state = AppState.matchState;
+
+            state.LastPlayedTurn = GameUtils.GetLastPlayedTurn();
+            state.StartDateTime = GameUtils.GetMatchStartDateTime();
+            state.EndDateTime = GameUtils.GetMatchEndDateTime();
+            state.WasConceded = GameUtils.WasConceded();
+            state.Player.Board = GameUtils.GetBoard();
         }
 
         internal static void OnInMenu()
@@ -43,8 +50,12 @@ namespace BgMatchResultRecorder
         {
             Logger.Info($"OnModeChanged: {mode}");
 
-            //if (GameUtils.IsBattlegroundsMatch()) return;
-            //OnDebugButtonClicked();
+            if (GameUtils.IsBattlegroundsMatch()) return;
+
+            if(mode == Mode.GAMEPLAY)
+            {
+                //AppState.matchState
+            }
         }
 
         internal static void OnGameWon()

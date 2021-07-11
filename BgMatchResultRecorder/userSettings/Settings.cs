@@ -7,6 +7,7 @@ namespace BgMatchResultRecorder
     {
         internal static readonly string _configLocation = Hearthstone_Deck_Tracker.Config.AppDataPath + @"\Plugins\BgMatchResultRecorder.config";
 
+        [JsonProperty]
         internal string websocketsServerAddress = "localhost:777";
 
         internal void save()
