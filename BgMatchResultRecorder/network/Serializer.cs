@@ -4,7 +4,7 @@ namespace BgMatchResultRecorder.network
 {
     class Serializer
     {
-        internal static string toJson(object value)
+        internal static string ToJson(object value)
         {
             return JsonConvert.SerializeObject(value, Formatting.Indented);
         }

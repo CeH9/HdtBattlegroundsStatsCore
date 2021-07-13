@@ -38,8 +38,6 @@ namespace BgMatchResultRecorder
             return Core.Game.IsBattlegroundsMatch;
         }
 
-
-        // =================================== Candidates to Stable ============================================
         internal static DateTime? GetMatchStartDateTime()
         {
             try
@@ -74,13 +72,18 @@ namespace BgMatchResultRecorder
         internal static int GetTurnNumber()
         {
             return Core.Game.GetTurnNumber();
+        }    
+
+        internal static string GetRandomUniqueId()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         internal static int GetLastPlayedTurn()
         {
             try
             {
-                var stats = Core.Game.CurrentGameStats;
+                Hearthstone_Deck_Tracker.Stats.GameStats stats = Core.Game.CurrentGameStats;
 
                 return stats.Turns;
             }
@@ -106,7 +109,7 @@ namespace BgMatchResultRecorder
             }
         }
 
-        internal static Board GetBoard()
+        internal static Board GetPlayerBoard()
         {
             try
             {
@@ -159,27 +162,82 @@ namespace BgMatchResultRecorder
             catch (Exception e) { return new AvailableRaces { DebugMessage = e.ToString() }; }
         }
 
-
-
-        // =================================== DEBUG ZONE ============================================        
-        internal static void GetBattlegroundsRank()
+        internal static Hero GetHero(Card card)
         {
             try
             {
-                var result = Core.Game.BattlegroundsRatingInfo.Rating;
-                Logger.Info($"GetBattlegroundsRank: {result}");
+                return new Hero
+                {
+                    Id = card.Id,
+                    Name = card.Name,
+                    DbId = card.DbfIf,
+                    TurnWhenCaptured = GetTurnNumber()
+                };
             }
-            catch (Exception e)
-            {
-                Logger.Info($"GetBattlegroundsRank Catch: {e.Message}");
-            }
+            catch (Exception e) { return new Hero { DebugMessage = e.ToString() }; }
         }
 
+        internal static Hero GetPlayerHero()
+        {
+            try
+            {
+                Entity hero = GetHeroPlayerEntity();
+                Card dbHero = Database.GetCardFromId(hero.CardId);
+
+                return new Hero
+                {
+                    Id = dbHero.Id,
+                    Name = dbHero.Name,
+                    DbId = dbHero.DbfIf,
+                    TurnWhenCaptured = GetTurnNumber()
+                };
+            }
+            catch (Exception e) { return new Hero { DebugMessage = e.ToString() }; }
+        }
+
+        internal static int? GetBattlegroundsRating()
+        {
+            try
+            {
+                return Core.Game.BattlegroundsRatingInfo.Rating;
+            }
+            catch { return null; }
+        }
+
+        internal static string GetRegion()
+        {
+            try
+            {
+                return Core.Game.CurrentRegion.ToString();
+            }
+            catch { return null; }
+        }
+
+        internal static int? GetPlayerPlace()
+        {
+            try
+            {
+                return GetHeroPlayerEntity().GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
+            }
+            catch { return null; }
+        }
+
+
+
+        // =================================== Utils ============================================     
+        internal static Entity GetHeroPlayerEntity()
+        {
+            return Core.Game.Entities.Values
+                   .Where(x => x.IsHero && x.GetTag(GameTag.PLAYER_ID) == Core.Game.Player.Id)
+                   .First();
+        }
+
+        // =================================== DEBUG ZONE ============================================     
         internal static void GetPlayerInfo()
         {
             try
             {
-                var result = Core.Game.Player.Name;
+                string result = Core.Game.Player.Name;
                 Logger.Info($"GetPlayerInfo: {result}");
             }
             catch (Exception e)
@@ -192,7 +250,7 @@ namespace BgMatchResultRecorder
         {
             try
             {
-                var result = Core.Game.Opponent.Name;
+                string result = Core.Game.Opponent.Name;
                 Logger.Info($"GetOpponentInfo: {result}");
             }
             catch (Exception e)
@@ -234,70 +292,6 @@ namespace BgMatchResultRecorder
             catch (Exception e)
             {
                 Logger.Info($"GetAllEntities Catch: {e.Message}");
-            }
-        }
-
-        internal static void GetRegion()
-        {
-            try
-            {
-                var result = Core.Game.CurrentRegion;
-                Logger.Info($"GetRegion: {result}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"GetRegion Catch: {e.Message}");
-            }
-        }
-
-        internal static Entity GetHero(int playerId)
-        {
-            //var heroId = Core.Game.PlayerEntity.GetTag(GameTag.HERO_ENTITY);                
-            Entity hero = Core.Game.Entities.Values
-                .Where(x => x.IsHero && x.GetTag(GameTag.PLAYER_ID) == playerId)
-                .First();
-
-            return hero;
-        }
-
-        internal static void GetPlayerHero()
-        {
-            try
-            {
-                var hero = GetHero(Core.Game.Player.Id);
-                Logger.Info($"GetPlayerHero id: {hero.Id} cardId: {hero.CardId} name: {hero.Name}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"GetPlayerHero Catch: {e.Message}");
-            }
-        }
-
-        internal static void GetOpponentHero()
-        {
-            try
-            {
-                var hero = GetHero(Core.Game.Opponent.Id);
-                Logger.Info($"GetOpponentHero id: {hero.Id} cardId: {hero.CardId} name: {hero.Name}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"GetOpponentHero Catch: {e.Message}");
-            }
-        }
-
-        internal static void GetBattlegroundsPlace()
-        {
-            try
-            {
-                Entity hero = GetHero(Core.Game.Player.Id);
-                var place = hero.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
-
-                Logger.Info($"getBattlegroundsPlace: {place}");
-            }
-            catch (Exception e)
-            {
-                Logger.Info($"getBattlegroundsPlace Catch: {e.Message}");
             }
         }
 

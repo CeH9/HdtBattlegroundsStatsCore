@@ -1,36 +1,34 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace BgMatchResultRecorder.data
 {
     internal class AppState
     {
         internal static MatchState matchState = null;
 
-        internal static MatchState DefaultMatchState()
+        internal static int? lastKnownRating;
+        internal static string lastKnownRegion = null;
+
+        internal static string lastFinishedMatchId = null;
+        internal static string nextMatchId = GameUtils.GetRandomUniqueId();
+
+        internal static VersionedBox<AvailableRaces> lastKnownAvailableRaces = new VersionedBox<AvailableRaces>();
+    }
+
+    internal class VersionedBox<T>
+    {
+        internal T Value { get; set; }
+
+        internal string Version { get; set; } = null;
+
+        // If Versions differs than current value is from old match
+        internal bool ShouldUpdate()
         {
-            var state = new MatchState();
-            //var player = new Player();
-            //player.Hero = new Hero
-            //{
-            //    Id = "-",
-            //    DbId = -1,
-            //    TurnWhenCaptured = -1
-            //};
-            //player.Board = new Board { Minions = new List<Minion>() };
+            return Version != AppState.nextMatchId;
+        }
 
-            //var invalidRace = new Race
-            //{
-            //    Id = (int)HearthDb.Enums.Race.INVALID,
-            //    Name = HearthDb.Enums.Race.INVALID.ToString()
-            //};
-
-            //state.Player = player;
-            //state.Place = -1;
-            //state.WasConceded = false;
-            //state.AvailableRaces = new List<Race> { invalidRace };
-            //state.Rank = -1;
-
-            return state;
+        internal static VersionedBox<T> From(T value)
+        {
+            return new VersionedBox<T> { Value = value, Version = AppState.nextMatchId };
         }
     }
 }

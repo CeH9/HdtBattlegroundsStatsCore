@@ -1,6 +1,4 @@
-﻿using BgMatchResultRecorder.data;
-using BgMatchResultRecorder.network;
-using BgMatchResultRecorder.utils;
+﻿using BgMatchResultRecorder.utils;
 using System.Windows.Controls;
 
 namespace BgMatchResultRecorder
@@ -15,34 +13,35 @@ namespace BgMatchResultRecorder
 
         internal void ApplyState(Config cfg)
         {
-            InputHostAddress.Text= cfg.websocketsServerAddress;
+            InputHostAddress.Text = cfg.websocketsServerAddress;
             InputHostAddress.CaretIndex = InputHostAddress.Text.Length;
+
+            DebugButton.Content = "Toggle Logging Opponent";
+            DebugButton2.Content = "Log AppState";
+            DebugButton3.Content = "Toggle Logging Races";
         }
 
         private void DebugButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Logger.Info("==== OnDebugButtonClicked ====");
+            //Logger.Info("==== OnDebugButtonClicked ====");
+
+            DebugStuff.ToggleLoggingOpponent();
+        }
+
+        private void DebugButton_Click2(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Logger.Info("==== OnDebugButton2 Clicked ====");
 
             DebugStuff.LogAppState();
 
-
-            //GameUtils.GetAvailableRaces();
-            //GameUtils.GetBattlegroundsRank();
-            //GameUtils.GetRegion();
-
-            //GameUtils.GetPlayerHero();
-            //GameUtils.GetOpponentHero();
-
-            //GameUtils.GetBattlegroundsPlace();
-            //GameUtils.GetBattlegroundsAllPlaces();
-            
-            //GameUtils.GetStats();
-
-            //GameUtils.GetPlayerInfo();
-            //GameUtils.GetOpponentInfo();
-            //GameUtils.GetAllHeroes();
-
             Logger.Info("======== OnDebug ========");
+        }    
+
+        private void DebugButton_Click3(object sender, System.Windows.RoutedEventArgs e)
+        {
+            //Logger.Info("==== OnDebugButton3 Clicked ====");
+
+            DebugStuff.ToggleLoggingRaces();
         }
     }
 }

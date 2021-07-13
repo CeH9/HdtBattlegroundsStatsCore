@@ -76,6 +76,7 @@
     <Compile Include="utils\GameUtils.cs" />
     <Compile Include="BgMatchResultRecorderPlugin.cs" />
     <Compile Include="GameEventsHandler.cs" />
+    <Compile Include="utils\RecursiveJob.cs" />
     <Compile Include="utils\Logger.cs" />
     <Compile Include="utils\MultiThreadingUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

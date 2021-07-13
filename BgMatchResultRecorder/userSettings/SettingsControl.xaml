@@ -16,5 +16,13 @@
         <DockPanel Margin="10">
             <Button x:Name="DebugButton" Content="Debug Button" Click="DebugButton_Click"  />
         </DockPanel>
+        
+        <DockPanel Margin="10">
+            <Button x:Name="DebugButton2" Content="Debug Button 2" Click="DebugButton_Click2"  />
+        </DockPanel>
+        
+        <DockPanel Margin="10">
+            <Button x:Name="DebugButton3" Content="Debug Button 3" Click="DebugButton_Click3"  />
+        </DockPanel>
     </StackPanel>
 </UserControl>

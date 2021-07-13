@@ -11,7 +11,12 @@ namespace BgMatchResultRecorder.data
         [JsonProperty]
         internal int DbId { get; set; } = GameUtils.INVALID_INT_ID;
         [JsonProperty]
+        internal string Name { get; set; } = null;
+        [JsonProperty]
         internal int? TurnWhenCaptured { get; set; } = null;
+
+        [JsonProperty]
+        internal string DebugMessage { get; set; } = null;
     }
 
     internal class Minion
@@ -34,9 +39,6 @@ namespace BgMatchResultRecorder.data
         internal bool IsGolden { get; set; } = false;
         [JsonProperty]
         internal bool Poisonous { get; set; } = false;
-
-        [JsonProperty]
-        internal string DebugMessage { get; set; } = null;
     }
 
     internal class Board
@@ -90,9 +92,11 @@ namespace BgMatchResultRecorder.data
         [JsonProperty]
         internal AvailableRaces AvailableRaces { get; set; } = new AvailableRaces();
         [JsonProperty]
-        internal int? RankDiff { get; set; } = null;
+        internal int? RatingDiff { get; set; } = null;
         [JsonProperty]
-        internal int? Rank { get; set; } = null;
+        internal int? Rating { get; set; } = null;  
+        [JsonProperty]
+        internal string Region{ get; set; } = null;
         [JsonProperty]
         internal int? LastPlayedTurn { get; set; } = null;
         [JsonProperty]

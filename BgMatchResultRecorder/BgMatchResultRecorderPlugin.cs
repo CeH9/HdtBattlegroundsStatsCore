@@ -30,12 +30,21 @@ namespace BgMatchResultRecorder
             Settings.IsPluginEnabled = true;
             Settings.LoadConfig();
 
-            AppState.matchState = AppState.DefaultMatchState();
+            AppState.matchState = new MatchState();
 
             InitMultiThreadingStuff();
             WebSockets.Open();
             InitSettingsUi();
             InitGameEvents();
+
+            // Init Required fields
+            try
+            {
+                AppState.nextMatchId = GameUtils.GetRandomUniqueId();
+                AppState.lastKnownRating = GameUtils.GetBattlegroundsRating();
+                AppState.lastKnownRegion = GameUtils.GetRegion();
+            }
+            catch (Exception e) { Logger.Info($"Plugin Load; Fail to Init Required Fields: {e.Message}"); }
         }
 
         public void OnUnload()
