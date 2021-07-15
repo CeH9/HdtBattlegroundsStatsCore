@@ -42,7 +42,7 @@ namespace BgMatchResultRecorder.utils
                 return;
             }
 
-            Logger.Info($"{tag}: StartLoggingRaces");
+            Logger.Info($"{tag}: StartLoggingOpponent");
 
             logOpponentJob = new RecursiveJob { initialDelay = 0, tag = tag };
 
@@ -60,14 +60,14 @@ namespace BgMatchResultRecorder.utils
 
                     if (hero != null)
                     {
-                        Logger.Info($"{tag}: Id: {hero.Id} cardId: {hero.CardId} Name: {hero.Name} OpponentName: {opponent.Name} OpponentId: {opponent.Id} | Timestamp: {DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
+                        Logger.Info($"{tag}: Id: {hero.Id} cardId: {hero.CardId} Name: {hero.Name} | {TimeStamp()}");
                     }
                     else
                     {
-                        Logger.Info($"{tag}: null | Timestamp: {DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
+                        Logger.Info($"{tag}: null | {TimeStamp()}");
                     }
                 }
-                catch (Exception e) { Logger.Info($"{tag}: Catch: {e} | Timestamp: {DateTimeOffset.Now.ToUnixTimeMilliseconds()}"); }
+                catch (Exception e) { Logger.Info($"{tag}: Catch: {e} | {TimeStamp()}"); }
 
                 return interval;
             });
@@ -80,7 +80,6 @@ namespace BgMatchResultRecorder.utils
             logOpponentJob.Cancel();
             logOpponentJob = null;
         }
-
 
         // ================================ Logging Races ============================================
         private static RecursiveJob logRacesJob = null;
@@ -120,7 +119,7 @@ namespace BgMatchResultRecorder.utils
             logRacesJob.Start(() =>
             {
                 var races = GameUtils.GetAvailableRaces().Races.Select(x => x.Name);
-                Logger.Info($"{String.Join(",", races)} | Timestamp: {DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
+                Logger.Info($"{String.Join(",", races)} | {TimeStamp()}");
 
                 return interval;
             });
@@ -132,6 +131,14 @@ namespace BgMatchResultRecorder.utils
 
             logRacesJob.Cancel();
             logRacesJob = null;
+        }
+
+
+        // ================================ Utils ============================================
+        // HDT filters out equivalent logs, so make it unique by appending Timestamp to the end
+        internal static string TimeStamp()
+        {
+            return $"Timestamp: { DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
         }
     }
 }
