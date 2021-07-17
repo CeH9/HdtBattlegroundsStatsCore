@@ -1,4 +1,5 @@
 ﻿using BgMatchResultRecorder.data;
+using BgMatchResultRecorder.network;
 using BgMatchResultRecorder.utils;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
@@ -15,7 +16,7 @@ namespace BgMatchResultRecorder
             // Refresh Match State
             AppState.matchState = new MatchState();
             AppState.lastKnownRating = GameUtils.GetBattlegroundsRating();
-            AppState.lastKnownRegion= GameUtils.GetRegion();
+            AppState.lastKnownRegion = GameUtils.GetRegion();
         }
 
         internal static void OnGameEnd()
@@ -23,7 +24,6 @@ namespace BgMatchResultRecorder
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnGameEnd");
 
-            shouldCheckOpponentHero = false;
             shouldCheckRating = true;
 
             MatchState state = AppState.matchState;
@@ -41,6 +41,9 @@ namespace BgMatchResultRecorder
             AppState.lastFinishedMatchId = AppState.nextMatchId;
             AppState.nextMatchId = GameUtils.GetRandomUniqueId();
 
+            Board oppBoard = GameUtils.GetOpponentBoard();
+            Logger.Info($"OpponentBoard:\n{Serializer.ToJson(oppBoard)}");
+
             DebugStuff.StartLoggingOpponent(interval: 500, autoCancelAfterMs: 3 * 1000);
 
             DebugStuff.LogAppState();
@@ -50,13 +53,11 @@ namespace BgMatchResultRecorder
         {
             if (!GameUtils.IsBattlegroundsMatch()) return;
             Logger.Info("OnInMenu");
-
-            DebugStuff.StartLoggingOpponent(interval: 500, autoCancelAfterMs: 3 * 1000);
         }
 
         internal static void OnModeChanged(Mode mode)
         {
-            Logger.Info($"OnModeChanged: {mode} rating: {GameUtils.GetBattlegroundsRating()}");
+            Logger.Info($"OnModeChanged: {mode}");
 
             if (mode == Mode.BACON)
             {
@@ -64,14 +65,14 @@ namespace BgMatchResultRecorder
                 AppState.lastKnownRegion = GameUtils.GetRegion();
             }
 
-            if (GameUtils.IsBattlegroundsMatch()) return;
+
+            if (!GameUtils.IsBattlegroundsMatch()) return;
 
             // GAMEPLAY triggers after GameStart but before First Turn.
             // Info about Races already available.
             if (mode == Mode.GAMEPLAY)
             {
                 AppState.lastKnownAvailableRaces = VersionedBox<AvailableRaces>.From(GameUtils.GetAvailableRaces());
-                DebugStuff.StartLoggingRaces(interval: 500, autoCancelAfterMs: 3 * 1000);
             }
         }
 
@@ -114,47 +115,47 @@ namespace BgMatchResultRecorder
 
             DebugStuff.StartLoggingOpponent(interval: 500, autoCancelAfterMs: 3 * 1000);
 
-            TryUpdateAvailableRaces();
-
             if (GameUtils.IsCombatPhase(player))
             {
                 Logger.Info($"TurnStart: Combat Phase");
-                //todo earlier
-                shouldCheckOpponentHero = true;
             }
             else
             {
                 Logger.Info($"TurnStart: Shopping Phase");
-                shouldCheckOpponentHero = false;
+                TryUpdateAvailableRaces();
 
                 if (AppState.matchState.Player.Hero.TurnWhenCaptured == null)
                 {
                     AppState.matchState.Player.Hero = GameUtils.GetPlayerHero();
                 }
             }
+
+            Board oppBoard = GameUtils.GetOpponentBoard();
+            Logger.Info($"OpponentBoard:\n{Serializer.ToJson(oppBoard)}");
         }
 
 
         // ---------------------------------------------------------------------------------------
         //                                          Utils 
-        // ---------------------------------------------------------------------------------------
-        private static bool shouldCheckOpponentHero = false;
+        // ---------------------------------------------------------------------------------------        
         private static bool shouldCheckRating = false;
 
         internal static void resetState()
         {
-            shouldCheckOpponentHero = false;
             shouldCheckRating = false;
         }
 
         internal static void TryCaptureOpponentHero(Hearthstone_Deck_Tracker.Hearthstone.Card card)
         {
-            if (!shouldCheckOpponentHero || card == null || card.Type != GameUtils.CARD_TYPE_HERO) return;
+            if (card == null || card.Type != GameUtils.CARD_TYPE_HERO) return;
 
             Logger.Info($"TryCaptureOpponentHero Hero: {card.LocalizedName} id: ${card.DbfIf}");
 
-            shouldCheckOpponentHero = false;
-            AppState.matchState.Opponent.Hero = GameUtils.GetHero(card);
+            AppState.matchState.Opponent.Hero = GameUtils.GetHeroFromCard(card);
+
+            Board oppBoard = GameUtils.GetOpponentBoard();
+            Logger.Info($"OpponentBoard:\n{Serializer.ToJson(oppBoard)}");
+            AppState.matchState.Opponent.Board = oppBoard;
         }
 
         internal static void TryUpdateRating()

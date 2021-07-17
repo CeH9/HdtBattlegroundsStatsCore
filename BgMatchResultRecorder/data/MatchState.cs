@@ -45,6 +45,8 @@ namespace BgMatchResultRecorder.data
     {
         [JsonProperty]
         internal List<Minion> Minions { get; set; } = new List<Minion>();
+        [JsonProperty]
+        internal int? TurnWhenCaptured { get; set; } = null;
 
         [JsonProperty]
         internal string DebugMessage { get; set; } = null;
@@ -55,7 +57,7 @@ namespace BgMatchResultRecorder.data
         [JsonProperty]
         internal Hero Hero { get; set; } = new Hero();
         [JsonProperty]
-        internal Board Board { get; set; } = new Board();
+        internal Board Board { get; set; } = new Board();        
     }
     internal class Opponent
     {

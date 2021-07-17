@@ -72,7 +72,7 @@ namespace BgMatchResultRecorder
         internal static int GetTurnNumber()
         {
             return Core.Game.GetTurnNumber();
-        }    
+        }
 
         internal static string GetRandomUniqueId()
         {
@@ -119,7 +119,30 @@ namespace BgMatchResultRecorder
                     .Select(x => ToMinion(x))
                     .ToList();
 
-                return new Board { Minions = minions };
+                return new Board
+                {
+                    Minions = minions,
+                    TurnWhenCaptured = GetTurnNumber()
+                };
+            }
+            catch (Exception e) { return new Board { DebugMessage = e.ToString() }; }
+        }
+
+        internal static Board GetOpponentBoard()
+        {
+            try
+            {
+                List<Minion> minions = Core.Game.Opponent.Board
+                    .Where(x => x.IsMinion)
+                    .OrderBy(x => x.GetTag(GameTag.ZONE_POSITION))
+                    .Select(x => ToMinion(x))
+                    .ToList();
+
+                return new Board
+                {
+                    Minions = minions,
+                    TurnWhenCaptured = GetTurnNumber()
+                };
             }
             catch (Exception e) { return new Board { DebugMessage = e.ToString() }; }
         }
@@ -162,7 +185,7 @@ namespace BgMatchResultRecorder
             catch (Exception e) { return new AvailableRaces { DebugMessage = e.ToString() }; }
         }
 
-        internal static Hero GetHero(Card card)
+        internal static Hero GetHeroFromCard(Card card)
         {
             try
             {
@@ -227,8 +250,13 @@ namespace BgMatchResultRecorder
         // =================================== Utils ============================================     
         internal static Entity GetHeroPlayerEntity()
         {
+            return GetHeroEntityByPlayerId(Core.Game.Player.Id);
+        }
+
+        internal static Entity GetHeroEntityByPlayerId(int playerId)
+        {
             return Core.Game.Entities.Values
-                   .Where(x => x.IsHero && x.GetTag(GameTag.PLAYER_ID) == Core.Game.Player.Id)
+                   .Where(x => x.IsHero && x.GetTag(GameTag.PLAYER_ID) == playerId)
                    .First();
         }
 

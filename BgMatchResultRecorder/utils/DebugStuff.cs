@@ -60,7 +60,7 @@ namespace BgMatchResultRecorder.utils
 
                     if (hero != null)
                     {
-                        Logger.Info($"{tag}: Id: {hero.Id} cardId: {hero.CardId} Name: {hero.Name} | {TimeStamp()}");
+                        Logger.Info($"{tag}: Id: {hero.Id} cardId: {hero.CardId} Name: {hero.Name} type:  | {TimeStamp()}");
                     }
                     else
                     {
